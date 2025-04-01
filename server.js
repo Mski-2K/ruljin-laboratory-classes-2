@@ -2,17 +2,56 @@
   📦 Dependy the Importer  
   Zaimportuj wszystkie wymagane moduły: path, express, body-parser, logger oraz routing.  
 */
-const http = require("http");
 const config = require("./config");
 const { requestRouting } = require("./routing/routing");
+const path = require("path");
+const express = require("express");
+const bodyParser = require("body-parser");
+const logger = require("./utils/logger");
+const productRoutes = require("./routing/product");
+const logoutRoutes = require("./routing/logout");
+// const killRoutes = require("./routing/kill");
+const homeRoutes = require("./routing/home");
+const { STATUS_CODE } = require("./constants/statusCode");
 
-const requestListener = (request, response) => {
-  requestRouting(request, response);
-};
+const app = express();
 
-const server = http.createServer(requestListener);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-server.listen(config.PORT);
+app.use((req, res, next) => {
+  const {method, url} = req;
+  console.log(logger.getInfoLog(method, url));
+  next();
+});
+
+app.use('/product', (req, res, next) => {
+  productRoutes.productRouting(req, res);
+  next();
+});
+
+app.use('/logout', (req, res, next) => {
+  const {method} = req;
+  logoutRoutes.logoutRouting(method, res);
+  next();
+});
+
+// app.use('/kill', (req, res, next) => {
+//   killRoutes.killRouting(req, res);
+//   next();
+// });
+
+app.use('/', (req, res, next) => {
+  const {method} = req;
+  homeRoutes.homeRouting(method, res);
+  next();
+});
+
+app.
+
+app.listen(config.PORT, () => {
+  console.log(`Example app listening on port ${config.PORT}`)
+});
 
 /*
   🏗 Structo the Builder  
