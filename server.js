@@ -3,15 +3,14 @@
   Zaimportuj wszystkie wymagane moduły: path, express, body-parser, logger oraz routing.  
 */
 const config = require("./config");
-const { requestRouting } = require("./routing/routing");
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("./utils/logger");
-const productRoutes = require("./routing/product");
-const logoutRoutes = require("./routing/logout");
-// const killRoutes = require("./routing/kill");
-const homeRoutes = require("./routing/home");
+const productRouter = require("./routing/product");
+const logoutRouter = require("./routing/logout");
+const killRouter = require("./routing/kill");
+const homeRouter = require("./routing/home");
 const { STATUS_CODE } = require("./constants/statusCode");
 
 const app = express();
@@ -25,29 +24,18 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/product', (req, res, next) => {
-  productRoutes.productRouting(req, res);
-  next();
-});
+app.use('/product', productRouter);
 
-app.use('/logout', (req, res, next) => {
-  const {method} = req;
-  logoutRoutes.logoutRouting(method, res);
-  next();
-});
+app.use('/logout', logoutRouter);
 
-// app.use('/kill', (req, res, next) => {
-//   killRoutes.killRouting(req, res);
-//   next();
+app.use('/kill', killRouter);
+
+app.use('/', homeRouter);
+
+// app.use((req, res) => {
+//   res.status(404).render("404 - Not Found");
 // });
 
-app.use('/', (req, res, next) => {
-  const {method} = req;
-  homeRoutes.homeRouting(method, res);
-  next();
-});
-
-app.
 
 app.listen(config.PORT, () => {
   console.log(`Example app listening on port ${config.PORT}`)
